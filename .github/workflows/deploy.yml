@@ -1,0 +1,64 @@
+name: "Deploy Komiser no GKE"
+
+on:
+  push:
+    branches:
+      - main  # Ou a branch usada para deploy
+
+jobs:
+  deploy:
+    name: "Deploy para o GKE"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔄 Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: 🔐 Configurar autenticação no GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: ⚙️ Configurar CLI do GCP
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.PROJECT_ID }}
+
+      - name: 🔑 Configurar kubectl e autenticar no GKE
+        run: |
+          gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER_NAME }} --zone ${{ secrets.GKE_ZONE }} --project ${{ secrets.PROJECT_ID }}
+          kubectl version --client
+
+      - name: 📦 Instalar Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.6.0
+
+      - name: 🔧 Inicializar Terraform
+        run: |
+          cd terraform
+          terraform init
+
+      - name: 📝 Planejar Terraform
+        run: |
+          cd terraform
+          terraform plan -out=tfplan
+
+      - name: 🚀 Aplicar Terraform (Provisionamento do GKE)
+        run: |
+          cd terraform
+          terraform apply -auto-approve tfplan
+
+      - name: 🔄 Verificar cluster e nós disponíveis
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
+
+      - name: 📤 Deploy do Komiser no Kubernetes
+        run: |
+          kubectl apply -f manifests/
+
+      - name: ✅ Verificar status do deployment
+        run: |
+          kubectl rollout status deployment/komiser
+          kubectl get pods -o wide

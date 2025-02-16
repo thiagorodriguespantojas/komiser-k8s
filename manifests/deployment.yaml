@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: komiser
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: komiser
+  template:
+    metadata:
+      labels:
+        app: komiser
+    spec:
+      containers:
+      - name: komiser
+        image: tailwarden/komiser:latest
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config.toml
+          subPath: config.toml
+      volumes:
+      - name: config-volume
+        configMap:
+          name: komiser-config

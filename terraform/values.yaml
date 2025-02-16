@@ -1,0 +1,8 @@
+komiser:
+  replicaCount: 2
+  image:
+    repository: tailwarden/komiser
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 3000

@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  komiser:
+    image: tailwarden/komiser:latest
+    container_name: komiser
+    ports:
+      - "3000:3000"
+    environment:
+      - GCP_PROJECT_ID=seu-projeto-gcp
+    volumes:
+      - ./config.toml:/app/config.toml

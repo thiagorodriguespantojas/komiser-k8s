@@ -1,0 +1,24 @@
+#[[aws]]
+  name = "Demo"
+  profile = "default"
+  source = "CREDENTIALS_FILE"
+
+#[sqlite]
+  file = "komiser.db"
+
+#[slack]
+  webhook = ""
+  reporting = false
+
+[server]
+port = 3000
+host = "0.0.0.0"
+
+[logging]
+level = "debug"
+
+[[providers]]
+name = "GCP"
+type = "gcp"
+credentials = "/home/thiagopantoja/komiser-key.json"
+project = "easynext-ti"
