@@ -4,6 +4,8 @@ provider "google" {
   credentials = file("gcp-credentials.json")
 }
 
+data "google_client_config" "default" {}
+
 provider "kubernetes" {
   host                   = google_container_cluster.primary.endpoint
   token                  = data.google_client_config.default.access_token

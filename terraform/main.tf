@@ -1,8 +1,3 @@
-provider "google" {
-  project = "easynext-ti"
-  region  = "us-central1"
-}
-
 resource "google_container_cluster" "primary" {
   name     = "komiser-cluster"
   location = "us-central1"
